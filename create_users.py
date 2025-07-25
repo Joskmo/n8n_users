@@ -1,4 +1,4 @@
-import requests, sys, os
+import requests, sys
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -7,13 +7,10 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from openpyxl import Workbook
-from dotenv import load_dotenv
-
-load_dotenv()
 
 # ===== Настройки ============================================================
 API_BASE = "http://localhost:5678"
-API_KEY = os.getenv('API_KEY')
+API_KEY = "your_api_key_here" # Замените на ваш API ключ
 USERS_NUM = 5
 USER_PREFIX = "student_"
 PASSWORD = "Password1"
