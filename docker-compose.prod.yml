@@ -34,6 +34,9 @@ services:
       N8N_HOST: ${N8N_DOMAIN}
       N8N_PROTOCOL: ${N8N_PROTOCOL}
       N8N_ENFORCE_HTTPS: "true"
+      N8N_PORT: 443                    # tell n8n "public port is 443"
+      N8N_EDITOR_BASE_URL: https://${N8N_DOMAIN}/
+      WEBHOOK_URL: https://${N8N_DOMAIN}/
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.n8n.rule=Host(`${N8N_DOMAIN}`)"
