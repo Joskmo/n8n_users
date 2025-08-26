@@ -1,5 +1,5 @@
 services:
-  # PostgreSQL (без изменений)
+  # PostgreSQL
   db:
     image: postgres:15
     restart: unless-stopped
@@ -17,9 +17,9 @@ services:
       timeout: 5s
       retries: 5
 
-  # n8n (критические исправления)
+  # n8n
   n8n:
-    image: n8nio/n8n:latest
+    image: n8nio/n8n:latest          # (лучше зафиксировать версию, см. рекомендации)
     restart: unless-stopped
     depends_on:
       db:
@@ -27,15 +27,25 @@ services:
     environment:
       DB_TYPE: postgresdb
       DB_POSTGRESDB_HOST: db
-      DB_POSTGRESDB_PORT: ${POSTGRES_PORT}:5432
+      DB_POSTGRESDB_PORT: ${POSTGRES_PORT}    # ← фикc (или 5432)
       DB_POSTGRESDB_DATABASE: ${POSTGRES_DB}
       DB_POSTGRESDB_USER: ${POSTGRES_USER}
       DB_POSTGRESDB_PASSWORD: ${POSTGRES_PASSWORD}
       N8N_HOST: ${N8N_DOMAIN:?N8N_DOMAIN is not set in .env file}
       N8N_PROTOCOL: ${N8N_PROTOCOL}
+      N8N_PORT: 5678
+      N8N_RUNNERS_ENABLED: "true"
       N8N_ENFORCE_HTTPS: "true"
       N8N_EDITOR_BASE_URL: https://${N8N_DOMAIN}
       WEBHOOK_URL: https://${N8N_DOMAIN}
+      # Очень рекомендуется задать постоянный ключ шифрования (см. ниже)
+      N8N_ENCRYPTION_KEY: ${N8N_ENCRYPTION_KEY}
+    healthcheck:                                   # ← ВНЕ environment!
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:5678/healthz/readiness || wget -qO- http://127.0.0.1:5678/healthz/readiness || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 30s
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.n8n.rule=Host(`${N8N_DOMAIN}`)"
